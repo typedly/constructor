@@ -81,6 +81,22 @@ import { ConstrainedConstructor } from '@typedly/constructor';
 
 ```typescript
 import { ConstrainedConstructor } from '@typedly/constructor';
+
+interface Animal {
+  speak(): void;
+}
+
+class Dog implements Animal {
+  constructor(public name: string) {}
+  speak() {
+    console.log(`${this.name} barks.`);
+  }
+}
+
+const dogCtor: ConstrainedConstructor<Animal, Dog, [string]> = Dog;
+const dog = new dogCtor('Buddy');
+dog.speak(); // "Buddy barks."
+
 ```
 
 ### `Constructor`
@@ -93,30 +109,69 @@ import { Constructor } from '@typedly/constructor';
 
 ```typescript
 import { DataConstructor } from '@typedly/constructor';
+
+interface DataCore<T> {
+  value: T;
+  set(value: T): void;
+}
+
+class Data<T> implements DataCore<T> {
+  constructor(public value: T) {}
+  set(value: T) {
+    this.value = value;
+  }
+}
+
+const dataCtor: DataConstructor<number, DataCore<number>, Data<number>, []> = Data;
+const data = new dataCtor(123);
+console.log(data.value); // 123
+
 ```
 
 ### `MapTypeConstructor`
 
 ```typescript
 import { MapTypeConstructor } from '@typedly/constructor';
+
+const mapCtor: MapTypeConstructor<string, number, Map<string, number>> = Map;
+const myMap = new mapCtor([['a', 1], ['b', 2]]);
+console.log(myMap.get('a')); // 1
+
 ```
 
 ### `SetTypeConstructor`
 
 ```typescript
 import { SetTypeConstructor } from '@typedly/constructor';
+
+const setCtor: SetTypeConstructor<string, Set<string>> = Set;
+const mySet = new setCtor(['apple', 'banana']);
+console.log(mySet.has('banana')); // true
+
 ```
 
 ### `WeakMapTypeConstructor`
 
 ```typescript
 import { WeakMapTypeConstructor } from '@typedly/constructor';
+
+const weakMapCtor: WeakMapTypeConstructor<object, string, WeakMap<object, string>> = WeakMap;
+const keyObj = {};
+const myWeakMap = new weakMapCtor([[keyObj, 'value']]);
+console.log(myWeakMap.get(keyObj)); // "value"
+
 ```
 
 ### `WeakSetTypeConstructor`
 
 ```typescript
 import { WeakSetTypeConstructor } from '@typedly/constructor';
+
+const weakSetCtor: WeakSetTypeConstructor<object, WeakSet<object>> = WeakSet;
+const obj = {};
+const myWeakSet = new weakSetCtor([obj]);
+console.log(myWeakSet.has(obj)); // true
+
 ```
 
 ## Type
@@ -125,6 +180,13 @@ import { WeakSetTypeConstructor } from '@typedly/constructor';
 
 ```typescript
 import { ExtractConstructorArgs } from '@typedly/constructor';
+
+class MyData {
+  constructor(value: number, unit: string, verbose: boolean) {}
+}
+
+type Args = ExtractConstructorArgs<typeof MyData>; // type Args = [unit: string, verbose: boolean]
+
 ```
 
 ## Contributing
